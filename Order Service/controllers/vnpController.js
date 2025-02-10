@@ -1,5 +1,6 @@
 const moment = require('moment')
 const request = require('request');
+const url = require('url')
 
 const Order = require('../models/orderModel')
 const Transaction = require('../models/transactionModel')
@@ -208,7 +209,11 @@ const vnpReturn =  async (req, res, next) => {
         }
         transaction.user_id = order.user_id
         await transaction.save()
-        return res.status(200).json({success: true, transaction: transaction, order: order})
+        //return res.status(200).json({success: true, transaction: transaction, order: order})
+        res.redirect(url.format({
+            pathname:"http://localhost:3000/complete",
+            query: vnp_Params
+          }));
     } else{
         return res.status(400).json({success: false, code: vnp_Params['vnp_ResponseCode']})
     }
