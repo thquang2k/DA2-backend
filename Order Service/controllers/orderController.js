@@ -204,7 +204,7 @@ const createOrder = async (req, res, next) => {
                     orderDetail.price = (1 - promotionData.promotion_rate)* orderDetail.unit_price
                 }
             }else{
-                orderDetail.price = orderDetail.unit_price
+                orderDetail.price = orderDetail.unit_price * orderDetail.quantity
             }
             
             await orderDetail.save()
