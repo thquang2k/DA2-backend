@@ -74,6 +74,14 @@ const createUser = async (req, res, next) => {
                 success: false,
                 message: "Username is required"
             })
+        }else{
+            let user = await User.findOne({user_name: username})
+            if(user){
+                return res.status(400).json({
+                    success: false,
+                    message: "Username is used"
+                })
+            }
         }
         let fullname = req.body.fullname
         if(!fullname){
