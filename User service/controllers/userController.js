@@ -402,6 +402,12 @@ const deleteUserById = async (req, res, next) => {
                     message: `User with ID ${userId} is not exist!`
                 })
             }else{
+                if(user.role_id == "0"){
+                    return res.status(400).json({
+                        success: false,
+                        message: `Cannot delete admin!`
+                    })
+                }
                 let data = { userId: user.user_id}
                 let response = await axios.delete(`${process.env.PRODUCT_SERVICE_URL}/cart/delete`, data)
                 if(response.data.success){

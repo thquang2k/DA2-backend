@@ -1,4 +1,5 @@
 const Upload = require('../models/productUploadModel')
+const Product = require('../models/productModel')
 
 const getAllUploads = async (req, res, next) => {
     try {
@@ -64,6 +65,12 @@ const uploadImage = async (req, res) => {
                     message: `File not uploaded!, Please attach jpeg file`});
         }
         let productId = req.params.productId
+        let product = await Product.findOne({product_id: productId})
+        if(!product){
+            return res.status(400).json(
+                { success: false,
+                    message: `Product with ID ${productId} is not exist`});
+        }
         let uploads = []
         for (let i = 0; i < req.files.length; i++) {
             let src = `localhost:5002/uploads/${req.files[i].filename}`
