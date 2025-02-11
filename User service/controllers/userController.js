@@ -201,7 +201,8 @@ const loginByAccount = async (req, res, next) => {
                         //Create payload
                         const payload = {
                             userId: user.user_id,
-                            username: user.user_name
+                            username: user.user_name,
+                            fullname: user.full_name
                         }
                         let role = await Role.findOne({role_id: user.role_id})
                         //Check role exist
@@ -272,13 +273,16 @@ const updateUserById = async (req, res, next) => {
             })
         }else{
             let user = await User.findOne({user_id: userId})
-            let oldUser = user
             if(!user){
                 return res.status(400).json({
                     success: false,
                     message: `User with ID ${userId} is not exist!`
                 })
             }else{
+                let fullname = req.body.fullname
+                if(phoneNumber){
+                    user.full_name = fullname
+                }
                 let phoneNumber = req.body.phoneNumber
                 if(phoneNumber){
                     user.phone_num = phoneNumber
