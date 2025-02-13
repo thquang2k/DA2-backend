@@ -120,31 +120,6 @@ const createOrder = async (req, res, next) => {
             deliveryCost = 20000
         }
 
-        if(req.body.couponId){
-            let coupon = await Coupon.findOne({coupon_id: couponId})
-            if(!coupon){
-                return res.status(400).json({
-                    success: false,
-                    message: `Cannot find coupon with ID ${couponId}`
-                })
-            }else if(coupon.is_used){
-                return res.status(400).json({
-                    success: false,
-                    message: `Coupon with ID ${couponId} has been used`
-                })
-            }else if(coupon.expired_at < new Date()){
-                return res.status(400).json({
-                    success: false,
-                    message: `Coupon with ID ${couponId} is expired`
-                })
-            }else{
-                if(coupon.discount_amount){
-                    discountAmount = coupon.discount_amount
-                }else{
-                    discountAmount = (cart.total_price + deliveryCost)*(coupon.discount_rate)
-                }
-            }
-        }
         let order = new Order({
             order_id: "temp",
             user_id: user.user_id,
@@ -155,24 +130,25 @@ const createOrder = async (req, res, next) => {
             total_price: cart.total_price,
             delivery_cost: deliveryCost
         })
-        if(req.body.couponId){
-            let coupon = await Coupon.findOne({coupon_id: couponId})
+        if(req.body.couponCode){
+            let coupon = await Coupon.findOne({coupon_code: req.body.couponCode})
             if(!coupon){
                 return res.status(400).json({
                     success: false,
-                    message: `Cannot find coupon with ID ${couponId}`
+                    message: `Cannot find coupon with Code ${req.body.couponCode}`
                 })
             }else if(coupon.is_used){
                 return res.status(400).json({
                     success: false,
-                    message: `Coupon with ID ${couponId} has been used`
+                    message: `Coupon with Code ${req.body.couponCode} has been used`
                 })
             }else if(coupon.expired_at < new Date()){
                 return res.status(400).json({
                     success: false,
-                    message: `Coupon with ID ${couponId} is expired`
+                    message: `Coupon with Code ${req.body.couponCode} is expired`
                 })
             }else{
+                order.coupon_code = req.body.couponCode
                 if(coupon.discount_amount){
                     order.discount_amount = coupon.discount_amount
                 }else{
