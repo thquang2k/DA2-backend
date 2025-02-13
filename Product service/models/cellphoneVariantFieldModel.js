@@ -74,7 +74,7 @@ const cellphoneVariantFieldSchema = new mongoose.Schema({
         internet: String,
         charger_type: String,
         has_jack3p5mm: Boolean,
-        gps_support: [String]
+        gps_support: Boolean
     },
     storage: {
         rom: String,
@@ -97,10 +97,7 @@ const cellphoneVariantFieldSchema = new mongoose.Schema({
         battery_type: String,
         capability: Number,
         charger: String
-    },
-    gears:[
-        String
-    ]
+    }
     
 })
 

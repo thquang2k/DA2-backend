@@ -1,4 +1,5 @@
 const Coupon = require('../models/couponModel')
+const generateRandomString = require('../utils/generateCoupon')
 
 const getAllCoupon = async (req, res, next) => {
     try {
@@ -84,6 +85,7 @@ const createCoupon = async (req, res, next) => {
                 coupon.discount_rate = 0
             }
         }
+        coupon.coupon_code = generateRandomString(12)
         coupon.coupon_id = coupon._id.toString()
         coupon.coupon_id.replace('new ObjectId(', '')
         coupon.coupon_id.replace(')', '')
@@ -108,20 +110,20 @@ const createCoupon = async (req, res, next) => {
     }
 }
 
-const updateCouponById = async (req, res, next) => {
+const updateCouponByCode = async (req, res, next) => {
     try {
-        let couponId = req.params.couponId
-        if(!couponId){
+        let couponCode = req.params.couponCode
+        if(!couponCode){
             return res.status(400).json({
                 success: false,
-                message: "require coupon ID"
+                message: "require coupon Code"
             })
         }else{
-            let coupon = await Coupon.findOne({coupon_id: couponId})
+            let coupon = await Coupon.findOne({coupon_code: couponCode})
             if(!coupon){
                 return res.status(400).json({
                     success: false,
-                    message: `coupon with ID ${couponId} is not exist`
+                    message: `coupon with code ${couponCode} is not exist`
                 }) 
             }else{
                 if(req.body.discountRate && req.body.discountAmount){
@@ -204,6 +206,6 @@ module.exports = {
     getAllCoupon,
     getCouponById,
     createCoupon,
-    updateCouponById,
+    updateCouponByCode,
     deleteCouponById
 }

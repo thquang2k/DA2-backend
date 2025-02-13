@@ -5,6 +5,10 @@ const couponSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    coupon_code: {
+        type: String,
+        unique: true
+    },
     discount_rate: {
         type: Number,
         default: 0

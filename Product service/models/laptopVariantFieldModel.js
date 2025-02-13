@@ -116,8 +116,7 @@ const laptopVariantFieldSchema = new mongoose.Schema({
     power: {
         capability: String,
         supply: String
-    },
-    gears: [{name: String}]
+    }
 })
 
 const laptopVariantFieldModel = mongoose.model("Laptop_Variant_Field", laptopVariantFieldSchema)

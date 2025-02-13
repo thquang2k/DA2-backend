@@ -49,6 +49,9 @@ const orderSchema = new mongoose.Schema({
         type: String,
         default: "Pending"
     }
+},
+{
+    timestamps: true
 })
 
 const orderModel = mongoose.model("Order", orderSchema)
