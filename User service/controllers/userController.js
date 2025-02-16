@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken')
 
 const getAllUser = async (req, res, next) => {
     try {
+        //Find all user
         let users = await User.find().select("-password");
         return res.status(200).json({
             success: true,
@@ -21,19 +22,30 @@ const getAllUser = async (req, res, next) => {
 }
 const getUserById = async (req, res, next) => {
     try {
+        //Validate param
         let userId = req.params.userId
+        //Failed Validation
         if(!userId){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
-                users: users,
-                message: "User ID is required"
+                message: `User ID is required`
             })
         }else{
+            //Success validation
             let user = await User.findOne({user_id: userId}).select("-password");
+            //Check exist user
+            if(!user){
+                //Not exist
+                return res.status(200).json({
+                    success: false,
+                    message: `User ID ${userId} is not exist`
+                })
+            }
+            //Exist
             return res.status(200).json({
                 success: true,
                 user: user,
-                message: `Get user by ID ${userId}`
+                message: `Get user by ID ${userId} succeeded`
             })
         }
     } catch (error) {
@@ -44,14 +56,16 @@ const getUserById = async (req, res, next) => {
 }
 const fetchUserData = async (req, res, next) => {
     try {
+        //Check user from token
         let user = req.user
-        console.log(user)
         if(!user){
-            return res.status(400).json({
+            //Failed
+            return res.status(401).json({
                 success: false,
                 message: `Not login`
             })
         }else{
+            //Success
             let userData = await User.findOne({user_id: user.userId}).select("-password")
             return res.status(200).json({
                 success: true,
@@ -68,16 +82,17 @@ const fetchUserData = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
     try {
+        //Validate fields
         let username = req.body.username
         if(!username){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: "Username is required"
             })
         }else{
             let user = await User.findOne({user_name: username})
             if(user){
-                return res.status(400).json({
+                return res.status(200).json({
                     success: false,
                     message: "Username is used"
                 })
@@ -85,35 +100,35 @@ const createUser = async (req, res, next) => {
         }
         let fullname = req.body.fullname
         if(!fullname){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: "Fullname is required"
             })
         }
         let phoneNumber = req.body.phoneNumber
         if(!phoneNumber){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: "Phone number is required"
             })
         }
         let email = req.body.email
         if(!email){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: "Email is required"
             })
         }
         let password = req.body.password
         if(!password){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: "password is required"
             })
         }
         let roleId = req.body.roleId
         if(!roleId){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: "Role is required"
             })
@@ -134,8 +149,9 @@ const createUser = async (req, res, next) => {
         user.user_id.replace(')', '')
         
         let data = { userId: user.user_id}
+        //Create cart of user
         let response = await axios.post(`${process.env.PRODUCT_SERVICE_URL}/cart/create`, data)
-        console.log(response)
+        //Response API success
         if(response.data.success){
             let save = await user.save()
             if(!save){
@@ -170,7 +186,7 @@ const loginByAccount = async (req, res, next) => {
         let password = req.body.password
         // Verify empty/undified/null
         if(!username){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: `Username is required`
             })
@@ -178,21 +194,21 @@ const loginByAccount = async (req, res, next) => {
             //Check user exist
             let user = await User.findOne({user_name: username})
             if(!user){
-                return res.status(400).json({
+                return res.status(200).json({
                     success: false,
                     message: `Username is not exist`
                 })
             }else{
                 //Check pass empty/undified/null
                 if(!password){
-                    return res.status(400).json({
+                    return res.status(200).json({
                         success: false,
                         message: `Password is required`
                     })
                 }else{
                     //Compare password
                     if(!bcrypt.compareSync(password, user.password)){
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: `Username or password is wrong!`
                         })
@@ -207,7 +223,7 @@ const loginByAccount = async (req, res, next) => {
                         let role = await Role.findOne({role_id: user.role_id})
                         //Check role exist
                         if(!role){
-                            return res.status(400).json({
+                            return res.status(200).json({
                                 success: false,
                                 message: `Role ID ${user.role_id} is not exist!`
                             })
@@ -239,7 +255,7 @@ const checkLoginByToken = async (req, res, next) => {
         let header = req.headers.authorization;
         let token = header && header.split(" ")[1];
         if (!token) {
-            return res.json({ 
+            return res.status(200).json({ 
                 success: false, 
                 message: "Missing token!" });
         }
@@ -267,14 +283,14 @@ const updateUserById = async (req, res, next) => {
     try {
         let userId = req.params.userId
         if(!userId){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: `User ID required!`
             })
         }else{
             let user = await User.findOne({user_id: userId})
             if(!user){
-                return res.status(400).json({
+                return res.status(200).json({
                     success: false,
                     message: `User with ID ${userId} is not exist!`
                 })
@@ -361,7 +377,7 @@ const updateCurrentUser = async (req, res, next) => {
             }
             let role = await Role.findOne({role_id: userData.role_id})
             if(!role){
-                return res.status(400).json({
+                return res.status(200).json({
                     success: false,
                     message: `Cannot get role with ID ${userData.role_id}`
                 })
@@ -390,14 +406,14 @@ const deleteUserById = async (req, res, next) => {
     try {
         let userId = req.params.userId
         if(!userId){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: `User ID required!`
             })
         }else{
             let user = await User.findOne({user_id: userId})
             if(!user){
-                return res.status(400).json({
+                return res.status(200).json({
                     success: false,
                     message: `User with ID ${userId} is not exist!`
                 })

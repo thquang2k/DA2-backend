@@ -6,7 +6,7 @@ const checkAdmin = async (req, res, next) => {
         let header = req.headers.authorization;
         let token = header && header.split(" ")[1];
         if (!token) {
-            return res.json({ 
+            return res.status(400).json({ 
                 success: false,
                 message: "Missing token!" });
         }
@@ -14,7 +14,7 @@ const checkAdmin = async (req, res, next) => {
         const user = decoded;
         if(user){
             if (user.role != "Admin") {
-                return res.json({ 
+                return res.status(405).json({ 
                     success: false,
                     message: "You don't have permission to access!" 
                 });
@@ -22,7 +22,7 @@ const checkAdmin = async (req, res, next) => {
                 next()
             }
         }else {
-            return res.json({ success: false, message: "User not login!" });
+            return res.status(401).json({ success: false, message: "User not login!" });
         }
     } catch (error) {
         return res.status(500).json({

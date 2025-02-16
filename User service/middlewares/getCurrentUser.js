@@ -6,7 +6,7 @@ const getCurrentUser = async (req, res, next) => {
         let header = req.headers.authorization;
         let token = header && header.split(" ")[1];
         if (!token) {
-            return res.json({ 
+            return res.status(400).json({ 
                 success: false,
                 message: "Missing token!" });
         }
@@ -16,7 +16,7 @@ const getCurrentUser = async (req, res, next) => {
             req.user = user
             next()
         }else {
-            return res.json({ success: false, message: "User not login!" });
+            return res.status(401).json({ success: false, message: "User not login!" });
         }
     } catch (error) {
         return res.status(500).json({
