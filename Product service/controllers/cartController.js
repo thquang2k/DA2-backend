@@ -10,7 +10,7 @@ const getCurrentUserCart = async (req, res, next) => {
     try {
         let user = req.user
         if(!user){
-            return res.status(400).json({
+            return res.status(401).json({
                 success: false,
                 message: "Not login"
             })
@@ -44,14 +44,14 @@ const removeFromCartByVariantId = async (req, res, next) => {
     try {
         let user = req.user
         if(!user){
-            return res.status(400).json({
+            return res.status(401).json({
                 success: false,
                 message: "Not login"
             })
         }
         let cart = await Cart.findOne({user_id: user.userId})
         if(!cart){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: `Cannot find cart with user ID ${user.userId}`
             })
@@ -59,7 +59,7 @@ const removeFromCartByVariantId = async (req, res, next) => {
         let variantId = req.params.variantId
         let cartDetail = await CartDetail.findOne({cart_id: cart.cart_id, variant_id: variantId})
         if(!cartDetail){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: `Variant with ID ${variantId} is not in cart`
             })

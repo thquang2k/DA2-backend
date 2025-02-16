@@ -26,14 +26,14 @@ const getBrandById = async (req, res, next) => {
     try {
         let brandId =req.params.brandId
         if(!brandId){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: "Brand ID is required!"
             })
         }else{
             let brand = await Brand.findOne({brand_id: brandId})
             if(!brand){
-                return res.status(400).json({
+                return res.status(200).json({
                     success: false,
                     message: `Brand with ID ${brandId} is not exist`
                 })
@@ -56,14 +56,14 @@ const createBrand = async (req, res, next) => {
     try {
         let brandId =req.body.brandId
         if(!brandId){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: "Brand ID is required!"
             })
         }else{
             let brand = await Brand.findOne({brand_id: brandId})
             if(brand){
-                return res.status(400).json({
+                return res.status(402000).json({
                     success: false,
                     message: `Brand ID ${brandId} has been used`
                 })
@@ -71,7 +71,7 @@ const createBrand = async (req, res, next) => {
         }
         let brandName =req.body.brandName
         if(!brandName){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: "Brand Name is required!"
             })
@@ -105,14 +105,14 @@ const updateBrandById = async (req, res, next) => {
     try {
         let brandId =req.params.brandId
         if(!brandId){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: "Brand ID is required!"
             })
         }else{
             let brand = await Brand.findOne({brand_id: brandId})
             if(!brand){
-                return res.status(400).json({
+                return res.status(200).json({
                     success: false,
                     message: `Brand ID ${brandId} is not exist`
                 })
@@ -146,14 +146,14 @@ const deleteBrandById = async (req, res, next) => {
     try {
         let brandId =req.params.brandId
         if(!brandId){
-            return res.status(400).json({
+            return res.status(200).json({
                 success: false,
                 message: "Brand ID is required!"
             })
         }else{
             let brand = await Brand.findOne({brand_id: brandId})
             if(!brand){
-                return res.status(400).json({
+                return res.status(200).json({
                     success: false,
                     message: `Brand ID ${brandId} is not exist`
                 })

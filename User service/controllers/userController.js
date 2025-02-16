@@ -2,6 +2,7 @@ const axios = require('axios')
 
 const User = require('../models/userModel')
 const Role = require('../models/roleModel')
+const Address = require('../models/addressModel')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
@@ -426,6 +427,7 @@ const deleteUserById = async (req, res, next) => {
                 }
                 let data = { userId: user.user_id}
                 let response = await axios.delete(`${process.env.PRODUCT_SERVICE_URL}/cart/delete`, data)
+                await Address.deleteMany({user_id: user.user_id})
                 if(response.data.success){
                     await User.findOneAndDelete({user_id: userId})
                     return res.status(200).json({
