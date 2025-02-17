@@ -991,21 +991,23 @@ const removeCellphoneById = async (req, res, next) => {
                     message: `Cellphone with ID ${productId} is not exist!`
                 })
             }else{
-                let remove = await Cellphone.findOneAndDelete({product_id: productId})
+                let remove = await Cellphone.deleteOne({product_id: productId})
                 let variants = await CellphoneVariant.find({product_id: productId})
+                
                 variants.forEach(async (variant) => {
-                    await CellphoneVariantField.findOneAndDelete({variant_id: variant.variant_id})
-                    await CellphoneVariant.findOneAndDelete({variant_id: variant.variant_id})
+                    
+                    await CellphoneVariantField.deleteOne({variant_id: variant.variant_id})
+                    await CellphoneVariant.deleteOne({variant_id: variant.variant_id})
                 });
                 if(remove){
-                    let productRemove = await Product.findOneAndDelete({product_id: productId})
+                    let productRemove = await Product.deleteOne({product_id: productId})
                     if(productRemove){
                         return res.status(200).json({
                             success: true,
                             message: `Cellphone with ID ${productId} is removed!`
                         })
                     }else{
-                        await cellphone.save()
+                        //await cellphone.save()
                         return res.status(400).json({
                             success: false,
                             message: `Product with ID ${productId} is failed to remove!`
