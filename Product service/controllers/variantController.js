@@ -944,7 +944,7 @@ const createCellphoneVariant = async (req, res, next) => {
                 
                 let checkSkuExist = await CellphoneVariant.findOne({sku: sku})
                 if(checkSkuExist){
-                    return res.status(400).json({
+                    return res.status(200).json({
                         success: false,
                         message: `SKU ${sku} has been used by other variant`
                     })
@@ -1061,7 +1061,7 @@ const updateLaptopVariantById = async (req, res, next) => {
                     }
                     stock = req.body.variant.stock
                     if(stock && stock > 0){
-                        variant.stock += stock
+                        variant.stock = stock
                     }
                 }
                 
@@ -1413,7 +1413,7 @@ const updateCellphoneVariantById = async (req, res, next) => {
                     }
                     stock = req.body.variant.stock
                     if(stock && stock > 0){
-                        variant.stock += stock
+                        variant.stock = stock
                     }
                 }
                 
@@ -1697,6 +1697,38 @@ const updateCellphoneVariantById = async (req, res, next) => {
     }
 }
 
+const updateVariantStock = async (req, res, next) => {
+    try {
+        let variantId = req.params.variantId
+        let variant = await LaptopVariant.findOne({variant_id: variantId})
+        if(!variant){
+            variant = await CellphoneVariant.findOne({variant_id: variantId})
+        }else{
+            return res.status(400).json({
+                success: false,
+                Error: `Variant ID ${variantId} is not exist`
+            })
+        }
+        let method = req.params.method
+        if(method == "reduce"){
+            variant.stock -= req.params.quantity
+        }
+        if(method == "increase"){
+            console.log("here")
+            variant.stock += req.params.quantity
+        }
+        await variant.save()
+        return res.status(200).json({
+            success: true,
+            message: "Updated stock of variant"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            Error: `Error ${error.message}`
+        })
+    }
+}
+
 const deleteLaptopVariantById = async (req, res, next) => {
     try {
         let variantId = req.params.variantId
@@ -1789,5 +1821,6 @@ module.exports = {
     updateLaptopVariantById,
     updateCellphoneVariantById,
     deleteLaptopVariantById,
-    deleteCellphoneVariantById
+    deleteCellphoneVariantById,
+    updateVariantStock
 }

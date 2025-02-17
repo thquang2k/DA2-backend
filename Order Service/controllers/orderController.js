@@ -161,8 +161,8 @@ const createOrder = async (req, res, next) => {
         order.order_id.replace('new ObjectId(', '')
         order.order_id.replace(')','')
 
-        console.log(cartDetail)
         for (let i = 0; i < cartDetail.length; i++) {
+            await axios.put(`${process.env.PRODUCT_SERVICE_URL}/products/variant/update/${cartDetail[i].variant_id}/reduce/${cartDetail[i].quantity}`)
             let orderDetail = new OrderDetail({
                 order_id: order.order_id,
                 product_name: cartDetail[i].product_name,

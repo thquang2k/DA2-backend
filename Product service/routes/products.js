@@ -32,4 +32,6 @@ router.put('/cellphone/detail/:productId/variant/update/:variantId', checkStaff,
 router.delete('/cellphone/delete/:productId', checkMaster, productController.removeCellphoneById)
 router.delete('/cellphone/detail/:productId/variant/delete/:variantId', checkMaster,variantController.deleteCellphoneVariantById)
 
+router.put('/variant/update/:variantId/:method/:quantity', variantController.updateVariantStock)
+
 module.exports = router;

@@ -166,6 +166,14 @@ const vnpReturn =  async (req, res, next) => {
     try {
         let vnp_Params = req.query;
     if(vnp_Params['vnp_TransactionStatus'] != '00'){
+        let orderDetail = await OrderDetail.find({order_id: vnp_Params['vnp_TxnRef']})
+        for (let i = 0; i < orderDetail.length; i++) {
+            await axios.put(`${process.env.PRODUCT_SERVICE_URL}/products/variant/update/${orderDetail[i].variant_id}/increase/${orderDetail[i].quantity}`)
+        }
+        res.redirect(url.format({
+            pathname:"http://localhost:3000/complete",
+            query: vnp_Params
+          }));
         return res.status(400).json({
             success: false,
             message: "Payment process failed!"
@@ -217,7 +225,10 @@ const vnpReturn =  async (req, res, next) => {
             query: vnp_Params
           }));
     } else{
-        return res.status(400).json({success: false, code: vnp_Params['vnp_ResponseCode']})
+        return res.status(400).json({
+            success: false,
+            message: "Checksum failed"
+        })
     }
     } catch (error) {
         return res.status(500).json({
