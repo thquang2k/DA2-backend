@@ -174,62 +174,60 @@ const vnpReturn =  async (req, res, next) => {
             pathname:"http://localhost:3000/complete",
             query: vnp_Params
           }));
-        return res.status(400).json({
-            success: false,
-            message: "Payment process failed!"
-        })
+    }else{
+        let secureHash = vnp_Params['vnp_SecureHash'];
+    
+        delete vnp_Params['vnp_SecureHash'];
+        delete vnp_Params['vnp_SecureHashType'];
+    
+        vnp_Params = sortObject(vnp_Params);
+    
+        let config = require('config');
+        let tmnCode = config.get('vnp_TmnCode');
+        let secretKey = config.get('vnp_HashSecret');
+    
+        let querystring = require('qs');
+        let signData = querystring.stringify(vnp_Params, { encode: false });
+        let crypto = require("crypto");     
+        let hmac = crypto.createHmac("sha512", secretKey);
+        let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");     
+    
+        if(secureHash === signed){
+            //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
+            vnp_Params['vnp_OrderInfo'].replace('+', ' ')
+            vnp_Params['vnp_OrderInfo'].replace('%3A', ':')
+            let description = vnp_Params['vnp_OrderInfo']
+            let transaction = new Transaction({
+                transaction_id: vnp_Params['vnp_TransactionNo'],
+                order_id: vnp_Params['vnp_TxnRef'],
+                amount: vnp_Params['vnp_Amount'],
+                method: "VNPay",
+                description: description
+            })
+    
+            let order = await Order.findOne({order_id: transaction.order_id})
+            order.status = "Paid"
+            await axios.delete(`${process.env.PRODUCT_SERVICE_URL}/cart/clear/${order.user_id}`)
+            let save =  await order.save()
+            if(!save){
+                return res.status(400).json({success: false, message: "Cannot save transaction"})
+            }
+            transaction.user_id = order.user_id
+            await transaction.save()
+            //return res.status(200).json({success: true, transaction: transaction, order: order})
+            res.redirect(url.format({
+                pathname:"http://localhost:3000/complete",
+                query: vnp_Params
+              }));
+
+            } else{
+                return res.status(400).json({
+                    success: false,
+                    message: "Checksum failed"
+                })
+            }
     }
 
-    let secureHash = vnp_Params['vnp_SecureHash'];
-
-    delete vnp_Params['vnp_SecureHash'];
-    delete vnp_Params['vnp_SecureHashType'];
-
-    vnp_Params = sortObject(vnp_Params);
-
-    let config = require('config');
-    let tmnCode = config.get('vnp_TmnCode');
-    let secretKey = config.get('vnp_HashSecret');
-
-    let querystring = require('qs');
-    let signData = querystring.stringify(vnp_Params, { encode: false });
-    let crypto = require("crypto");     
-    let hmac = crypto.createHmac("sha512", secretKey);
-    let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");     
-
-    if(secureHash === signed){
-        //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
-        vnp_Params['vnp_OrderInfo'].replace('+', ' ')
-        vnp_Params['vnp_OrderInfo'].replace('%3A', ':')
-        let description = vnp_Params['vnp_OrderInfo']
-        let transaction = new Transaction({
-            transaction_id: vnp_Params['vnp_TransactionNo'],
-            order_id: vnp_Params['vnp_TxnRef'],
-            amount: vnp_Params['vnp_Amount'],
-            method: "VNPay",
-            description: description
-        })
-
-        let order = await Order.findOne({order_id: transaction.order_id})
-        order.status = "Paid"
-        await axios.delete(`${process.env.PRODUCT_SERVICE_URL}/cart/clear/${order.user_id}`)
-        let save =  await order.save()
-        if(!save){
-            return res.status(400).json({success: false, message: "Cannot save transaction"})
-        }
-        transaction.user_id = order.user_id
-        await transaction.save()
-        //return res.status(200).json({success: true, transaction: transaction, order: order})
-        res.redirect(url.format({
-            pathname:"http://localhost:3000/complete",
-            query: vnp_Params
-          }));
-    } else{
-        return res.status(400).json({
-            success: false,
-            message: "Checksum failed"
-        })
-    }
     } catch (error) {
         return res.status(500).json({
             Error: `Error: ${error.message}`

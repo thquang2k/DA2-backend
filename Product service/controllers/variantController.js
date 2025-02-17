@@ -1703,14 +1703,22 @@ const updateVariantStock = async (req, res, next) => {
         let variant = await LaptopVariant.findOne({variant_id: variantId})
         if(!variant){
             variant = await CellphoneVariant.findOne({variant_id: variantId})
-        }else{
-            return res.status(400).json({
-                success: false,
-                Error: `Variant ID ${variantId} is not exist`
-            })
+            if(!variant){
+                return res.status(400).json({
+                    success: false,
+                    Error: `Variant ID ${variantId} is not exist`
+                })
+            }
         }
+        
         let method = req.params.method
         if(method == "reduce"){
+            if(variant.stock == 0 || variant.stock < req.params.quantity){
+                return res.status(400).json({
+                    success: false,
+                    Error: `Variant ID ${variantId} stock currently is 0 or smaller than quantity`
+                })
+            }
             variant.stock -= req.params.quantity
         }
         if(method == "increase"){
