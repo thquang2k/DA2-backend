@@ -1,8 +1,9 @@
 const moment = require('moment')
 const request = require('request');
 const url = require('url')
-
+const axios = require('axios')
 const Order = require('../models/orderModel')
+const OrderDetail = require('../models/orderDetailModel')
 const Transaction = require('../models/transactionModel')
 
 const sortObject = (obj) => {
@@ -203,6 +204,7 @@ const vnpReturn =  async (req, res, next) => {
 
         let order = await Order.findOne({order_id: transaction.order_id})
         order.status = "Paid"
+        await axios.delete(`${process.env.PRODUCT_SERVICE_URL}/cart/clear/${order.user_id}`)
         let save =  await order.save()
         if(!save){
             return res.status(400).json({success: false, message: "Cannot save transaction"})

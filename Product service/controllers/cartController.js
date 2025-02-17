@@ -287,11 +287,23 @@ const removeCart = async (req, res, next) => {
         })
     }
 }
+const clearCart = async (req, res, next) => {
+    let userId = req.params.userId
+    let cart = await Cart.findOne({user_id: userId})
+    cart.total_item = 0
+    cart.total_price = 0
+    await CartDetail.deleteMany({cart_id: cart.cart_id})
+    return res.status(200).json({
+        success: true,
+        message: "Cart cleared"
+    })
+}
 
 module.exports = {
     getCurrentUserCart,
     createCart,
     removeCart,
     addToCart,
-    removeFromCartByVariantId
+    removeFromCartByVariantId,
+    clearCart
 }
