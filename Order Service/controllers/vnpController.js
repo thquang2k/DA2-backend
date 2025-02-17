@@ -170,9 +170,13 @@ const vnpReturn =  async (req, res, next) => {
         for (let i = 0; i < orderDetail.length; i++) {
             await axios.put(`${process.env.PRODUCT_SERVICE_URL}/products/variant/update/${orderDetail[i].variant_id}/increase/${orderDetail[i].quantity}`)
         }
+        let order = await Order.findOne({order_id: vnp_Params['vnp_TxnRef']})
+        console.log(order)
+        order.status = "Cancelled"
+        console.log(order)
+        await order.save()
         res.redirect(url.format({
-            pathname:"http://localhost:3000/complete",
-            query: vnp_Params
+            pathname:"http://localhost:3000/failed"
           }));
     }else{
         let secureHash = vnp_Params['vnp_SecureHash'];
@@ -216,8 +220,7 @@ const vnpReturn =  async (req, res, next) => {
             await transaction.save()
             //return res.status(200).json({success: true, transaction: transaction, order: order})
             res.redirect(url.format({
-                pathname:"http://localhost:3000/complete",
-                query: vnp_Params
+                pathname:"http://localhost:3000/complete"
               }));
 
             } else{
