@@ -630,7 +630,7 @@ const createCellphoneVariant = async (req, res, next) => {
         }else{
             let cellphone = await Cellphone.findOne({product_id: productId})
             if(!cellphone){
-                return res.status(400).json({
+                return res.status(200).json({
                     success: false,
                     message: `Cellphone with ID ${productId} is not exist!`
                 })
@@ -640,14 +640,14 @@ const createCellphoneVariant = async (req, res, next) => {
                 if(req.body.variant){
                     variantName = req.body.variant.name
                     if(!variantName){
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: "variant.name is required!"
                         })
                     }
                     price = req.body.variant.price
                     if(!price){
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: "variant.price is required!"
                         })
@@ -658,7 +658,7 @@ const createCellphoneVariant = async (req, res, next) => {
                     }else{
                         let promotion = await Promotion.findOne({promotion_id: promotionId})
                         if(!promotion){
-                            return res.status(400).json({
+                            return res.status(200).json({
                                 success: false,
                                 message: `Promotion with ID ${promotionId} is not exist`
                             })
@@ -669,7 +669,7 @@ const createCellphoneVariant = async (req, res, next) => {
                         stock = 0
                     }
                 }else{
-                    return res.status(400).json({
+                    return res.status(200).json({
                         success: false,
                         message: `variant is required in body!`
                     })
@@ -688,21 +688,21 @@ const createCellphoneVariant = async (req, res, next) => {
                 if(req.body.variantField){
                     mfgYear = req.body.variantField.mfgYear
                     if(!mfgYear){
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: "variantField.mfgYear is required!"
                         })
                     }
                     originId = req.body.variantField.originId
                     if(!originId){
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: "variantField.originId is required!"
                         })
                     }else{
                         let origin = await Origin.findOne({origin_id: originId})
                         if(!origin){
-                            return res.status(400).json({
+                            return res.status(200).json({
                                 success: false,
                                 message: `Origin with ID ${originId} is not exist`
                             })
@@ -710,21 +710,21 @@ const createCellphoneVariant = async (req, res, next) => {
                     }
                     weight = req.body.variantField.weight
                     if(!weight){
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: "variantField.weight is required!"
                         })
                     }
                     colorId = req.body.variantField.colorId
                     if(!colorId){
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: "variantField.colorId is required!"
                         })
                     }else{
                         let color = await Color.findOne({color_id: colorId})
                         if(!color){
-                            return res.status(400).json({
+                            return res.status(200).json({
                                 success: false,
                                 message: `Color with ID ${colorId} is not exist`
                             })
@@ -732,7 +732,7 @@ const createCellphoneVariant = async (req, res, next) => {
                     }
                     material = req.body.variantField.material
                     if(!material){
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: "variantField.material is required!"
                         })
@@ -743,7 +743,7 @@ const createCellphoneVariant = async (req, res, next) => {
                     }
                     ramStorage = req.body.variantField.ramStorage
                     if(!ramStorage){
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: "variantField.ramStorage is required!"
                         })
@@ -759,13 +759,13 @@ const createCellphoneVariant = async (req, res, next) => {
                             depth: req.body.variantField.whdSize.depth
                         }
                         if(!whdSize.width || !whdSize.height || ! whdSize.depth){
-                            return res.status(400).json({
+                            return res.status(200).json({
                                 success: false,
                                 message: "Width, Height, Depth is all required!"
                             })
                         }
                     }else{
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: `variantField.whdSize is required in body!`
                         })
@@ -778,13 +778,13 @@ const createCellphoneVariant = async (req, res, next) => {
                             maxRate: req.body.variantField.cpu.maxRate
                         }
                         if(!cpu.version || !cpu.name || !cpu.processorNum || !cpu.maxRate){
-                            return res.status(400).json({
+                            return res.status(200).json({
                                 success: false,
                                 message: "CPU Version, Name, Number of processors, Max rate is all required!"
                             })
                         }
                     }else{
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: `variantField.cpu is required in body!`
                         })
@@ -800,7 +800,7 @@ const createCellphoneVariant = async (req, res, next) => {
                             gpsSupport: []
                         }
                         if(!req.body.variantField.connectors.sim || !connectors.chargerType){
-                            return res.status(400).json({
+                            return res.status(200).json({
                                 success: false,
                                 message: "Connector SIM, Charger Type is all required!"
                             })
@@ -819,14 +819,10 @@ const createCellphoneVariant = async (req, res, next) => {
                             }
                             if(!req.body.variantField.connectors.gpsSupport){
                                 connectors.gpsSupport = "Not supported"
-                            }else{
-                                req.body.variantField.connectors.gpsSupport.forEach(gps => {
-                                    connectors.gpsSupport.push(gps)
-                                });
                             }
                         }
                     }else{
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: `variantField.connectors is required in body!`
                         })
@@ -838,7 +834,7 @@ const createCellphoneVariant = async (req, res, next) => {
                             maxDriveSupport: req.body.variantField.storage.maxDriveSupport
                         }
                         if(!storage.rom){
-                            return res.status(400).json({
+                            return res.status(200).json({
                                 success: false,
                                 message: "Storage ROM is required!"
                             })
@@ -848,7 +844,7 @@ const createCellphoneVariant = async (req, res, next) => {
                                 storage.driveSupport.maxDriveSupport = 0
                             }else{
                                 if(!storage.maxDriveSupport){
-                                    return res.status(400).json({
+                                    return res.status(200).json({
                                         success: false,
                                         message: "Storage Max drive support is required!"
                                     })
@@ -857,7 +853,7 @@ const createCellphoneVariant = async (req, res, next) => {
                         }
     
                     }else{
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: `variantField.storage is required in body!`
                         })
@@ -866,10 +862,9 @@ const createCellphoneVariant = async (req, res, next) => {
                         if(!req.body.variantField.cameras.backCamera){
                             cameras.backCamera = "None"
                         }else{
-                            cameras.backCamera = []
-                            req.body.variantField.cameras.backCamera.forEach(camera => {
-                                cameras.backCamera.push(camera)
-                            });
+                            cameras.backCamera.camera_type = req.body.variantField.cameras.backCamera.type
+                            cameras.backCamera.resolution = req.body.variantField.cameras.backCamera.resolution
+                            cameras.backCamera.video_resolution = req.body.variantField.cameras.backCamera.videoResolution
                         }
                         if(!req.body.variantField.cameras.frontCamera){
                             cameras.front_camera = "None"
@@ -897,7 +892,7 @@ const createCellphoneVariant = async (req, res, next) => {
                                 material: req.body.variantField.screen.material
                             }
                             if(!screen.size || !screen.type || !screen.refreshRate || !screen.brightRate || !screen.material){
-                                return res.status(400).json({
+                                return res.status(200).json({
                                     success: false,
                                     message: "Screen Size, Type, Refresh Rate, Bright rate, Material is all required!"
                                 })
@@ -907,13 +902,13 @@ const createCellphoneVariant = async (req, res, next) => {
                                 }
                             }
                         }else{
-                            return res.status(400).json({
+                            return res.status(200).json({
                                 success: false,
                                 message: "variantField.screen.resolution width, height is all required!"
                             })
                         }
                     }else{
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: `variantField.screen is required in body!`
                         })
@@ -925,24 +920,20 @@ const createCellphoneVariant = async (req, res, next) => {
                             charger: req.body.variantField.power.charger
                         }
                         if(!power.batteryType || !power.capability || !power.charger){
-                            return res.status(400).json({
+                            return res.status(200).json({
                                 success: false,
                                 message: "Power battery type, capility, charger is all required!"
                             })
                         }
                     }else{
-                        return res.status(400).json({
+                        return res.status(200).json({
                             success: false,
                             message: `variantField.power is required in body!`
                         })
                     }
-                    if(req.body.variantField.gears){
-                        req.body.variantField.gears.forEach(gear => {
-                            gears.push(gear)
-                        });
-                    }
+
                 }else{
-                    return res.status(400).json({
+                    return res.status(200).json({
                         success: false,
                         message: `variantField is required in body!`
                     })

@@ -693,7 +693,7 @@ const updateLaptopById = async (req, res, next) => {
                 if(productName){
                     laptop.product_name = productName
                 }
-                let description = req.body.description
+                let description = req.body.productDescription
                 if(description){
                     laptop.description = description
                 }

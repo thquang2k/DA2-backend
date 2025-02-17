@@ -82,11 +82,11 @@ const cellphoneVariantFieldSchema = new mongoose.Schema({
         max_drive_support: Number
     },
     camera: {
-        back_camera: [{
+        back_camera: {
             camera_type: String,
             resolution: String,
             video_resolution: String
-        }],
+        },
         front_camera: {
             camera_type:String,
             resolution: String,
